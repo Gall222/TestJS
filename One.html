@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>One</title>
+</head>
+<body>
+
+<form name="form" method="post" action="One.php" id="form">
+    <p>
+        <label for="numberTwo">Первое число:</label>
+        <input id="numberOne" name="numberOne" type="text" value="0.1">
+    </p>
+    <p>
+        <label for="numberTwo">Второе число:</label>
+        <input id="numberTwo" name="numberTwo" type="text" value="0.2">
+    </p>
+    <button type="button" onclick="answer()">Сложить</button>
+</form>
+<br>
+<div>Вывод:</div>
+
+<script>
+    function answer() {
+        let numOne = document.getElementById('numberOne').value;
+        let numTwo = document.getElementById('numberTwo').value;
+        let ans = +numOne + +numTwo;
+        document.getElementsByTagName('div')[0].innerText = "Вывод: " + ans.toFixed(1);
+    }
+
+
+</script>
+
+</body>
+</html>

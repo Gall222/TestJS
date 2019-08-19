@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Four</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous">
+
+    </script>
+    <style>
+        td {
+            width: 50px;
+            height: 50px;
+            background: white;
+            text-align: center;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div id="board"></div>
+
+
+<script>
+
+    let id = 1,
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H"],
+        html = '<table style="border: solid" align="center">',
+        boardSize = 11;
+    for (let i = 1; i < boardSize; i++) {       //создание поля, клетки хранят свой цвет
+        html += "<tr>";
+        for (let j = 1; j < boardSize; j++) {
+            let colorOfCell;
+            i % 2 ? (colorOfCell = j % 2 ? 'white' : 'black') : (colorOfCell = j % 2 ? 'black' : 'white');  //черные или белые
+
+            if (i !== 1 && j !== 1 && i !== 10 && j !== 10) {
+                html += '<td style="background: ' + colorOfCell + '" id="' + id + '" data-color="' + colorOfCell + '"></td>';
+            //клетки
+            } else {
+                if (i === 1 && j > 1 && j < 10 || i === 10 && j > 1 && j < 10)
+                    html += '<td id ="' + id + '" data-border="x">' + letters[j - 2] + '</td>';      //буквы
+                else if (i === 1 && j === 1 || i === 10 && j === 10 || i === 1 && j === 10 || i === 10 && j === 1)
+                    html += '<td id ="' + id + '" data-border="x"></td>';     //пустые углы
+                else html += '<td id ="' + id + '" data-border="x">' + (boardSize - i - 1) + '</td>';   //числа
+            }
+            id++;
+        }
+        html += "</tr>";
+    }
+
+    html += "</table>";
+    document.getElementById("board").innerHTML = html;
+
+
+    $("td").on('click', function () {
+
+        let el = $(this);
+        $('td').css('background', function () {     // вернуть всем клеткам их изначальные цвета
+            return $(this).data('color');
+        });
+        let id = el.attr('id');
+
+
+        function get(id) {
+            return document.getElementById(id);
+        }
+
+//подсветка ходов и коня
+        if (!$(get(+id)).data('border')) get(id).style.background = "red";
+
+        if($(get(id - 21)).data('border') !== 'x' && id - 21 > 0) get(id - 21).style.background = "green";
+        if($(get(id - 12)).data('border') !== 'x' && id - 12 > 0) get(id - 12).style.background = "green";
+        if($(get(+id + 8)).data('border') !== 'x' && +id + 8 < 100) get(+id + 8).style.background = "green";
+        if($(get(+id + 19)).data('border') !== 'x' && +id + 19 < 100) get(+id + 19).style.background = "green";
+        if($(get(+id + 21)).data('border') !== 'x' && +id + 21 < 100) get(+id + 21).style.background = "green";
+        if($(get(+id + 12)).data('border') !== 'x' && +id + 12 < 100) get(+id + 12).style.background = "green";
+        if($(get(id - 8)).data('border') !== 'x' && id - 8 > 0) get(id - 8).style.background = "green";
+        if($(get(id - 19)).data('border') !== 'x' && id - 19 > 0) get(id - 19).style.background = "green";
+
+    })
+
+</script>
+</body>
+</html>

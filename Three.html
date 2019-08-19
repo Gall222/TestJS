@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous">
+
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <style>
+        td {
+            width: 100px;
+            height: 100px;
+            background: white;
+        }
+
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+<br>
+
+<button onclick="start()" style="margin-left: 49%" id="startButton">Start</button>
+<br>
+<br>
+<div id="timer" style="margin-left: 49%"></div>
+
+<script>
+    createCells();
+    function createCells() {        //отрисовка таблицы
+        let colorsArray = ["red", "orange", "yellow", "green", "blue", "violet", "black", "brown"],
+            id = 1;
+
+        let html = '<table border="1" align="center">';
+        for (let i = 0; i < 4; i++) {
+            html += "<tr>";
+            for (let j = 0; j < 4; j++) {
+                let tdResult,
+                    randomColorKey = Math.floor(Math.random() * colorsArray.length), //случайный ключ из массива с цветами
+                    color = colorsArray[randomColorKey];
+                if (color.charAt(0) !== "X") {     //если не было такого цвета, присвоить его и отметить, что такой цвет уже был
+                    tdResult = color;
+                    colorsArray[randomColorKey] = "X" + color;
+                } else {                           //иначе вывести цвет и удалить из массива
+                    tdResult = color.slice(1);
+                    colorsArray.splice(randomColorKey, 1);
+                }
+
+                html += '<td data-color="' + tdResult + '" id="' + id + '"></td>';
+                id++;
+            }
+            html += "</tr>";
+        }
+
+        html += "</table>";
+        document.getElementById("container").innerHTML = html;
+    }
+
+    let lastColor = 0,
+        lastId = "",
+        pair = 0,
+        winCount = 0;
+
+    function start() {                                      //старт
+
+        $("#startButton").attr("onClick", "timerStop()");  //кнопка по повторному нажатию  останавливает
+
+
+        $(document).ready(function () {
+            $('td').on('click', function () {
+                let thisTd = this;
+                let color = $(thisTd).data('color');
+                let id = $(thisTd).attr('id');
+
+                $(thisTd).css('background', color);             //открыть цвет нажатого квадрата
+
+
+                if (color !== lastColor && lastColor !== 0 && pair !== 2 && id !== "x") {     //если не предыдущий, не первый, без пары
+                    function getTime(a, b) {
+                        setTimeout(function () {
+                            $(b).css('background', 'white');                       //вернуть белый цвет, сбросить показатели
+                            $('#' + String(a)).css('background', 'white');
+                        }, 1000);
+                    }
+
+                    getTime(lastId, thisTd);
+                    lastId = "";
+                    lastColor = 0;
+                    pair = 0;
+                } else if (id !== lastId && id !== "x") {                        //иначе ++показатель пары и присв. показатели предыдущ.
+                    pair++;
+                    lastColor = color;
+                    if (pair === 2) {
+                        pair = 0; //сбросить пару, если пара была открыта и осталась
+                        winCount++;
+                        lastColor = 0;
+
+                        document.getElementById(id).id = "x";           //пометить открытые квадраты как "замороженные"
+                        document.getElementById(lastId).id = "x";
+                    }
+                    lastId = id;
+                }
+
+
+                if (winCount === 8) {  //проверка на победу по кол-ву пар
+
+                    alert("Вы выиграли! Ваше время: " + document.getElementById("timer").innerHTML);
+                    timerStop();
+                    createCells();
+                }
+
+            });
+        });
+
+        timer();
+
+        function timer() {              //секундомер
+            let sec = 0;
+            let min = 0;
+            timeMarker = setInterval(function () {
+                document.getElementById("timer").innerHTML = min + " : " + sec;
+                sec++;
+                if (sec === 60) {
+                    min++;
+                    sec = 0;
+                }
+            }, 1000);
+        }
+    }
+
+    let timeMarker;
+
+    function timerStop() {              //сброс секундомера и основных параметров
+        clearInterval(timeMarker);
+        winCount = 0;
+        pair = 0;
+        lastId = "";
+        lastColor = 0;
+
+        $("#startButton").attr("onClick", "start()");
+        $('td')
+            .css('background', 'white')
+            .off('click');
+        document.getElementById("timer").innerHTML = "";
+
+    }
+
+
+</script>
+</body>
+</html>
